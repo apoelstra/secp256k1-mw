@@ -149,6 +149,12 @@ AC_ARG_ENABLE(module_rangeproof,
     [enable_module_rangeproof=$enableval],
     [enable_module_rangeproof=no])
 
+AC_ARG_ENABLE(module_bulletproof,
+    AS_HELP_STRING([--enable-module-bulletproof],[enable Pedersen / zero-knowledge bulletproofs module (default is no)]),
+    [enable_module_bulletproof=$enableval],
+    [enable_module_bulletproof=no])
+
+
 AC_ARG_ENABLE(module_whitelist,
     AS_HELP_STRING([--enable-module-whitelist],[enable key whitelisting module (default is no)]),
     [enable_module_whitelist=$enableval],
@@ -484,6 +490,10 @@ if test x"$enable_module_rangeproof" = x"yes"; then
   AC_DEFINE(ENABLE_MODULE_RANGEPROOF, 1, [Define this symbol to enable the zero knowledge range proof module])
 fi
 
+if test x"$enable_module_bulletproof" = x"yes"; then
+  AC_DEFINE(ENABLE_MODULE_BULLETPROOF, 1, [Define this symbol to enable the Pedersen / zero knowledge bulletproof module])
+fi
+
 if test x"$enable_module_whitelist" = x"yes"; then
   AC_DEFINE(ENABLE_MODULE_WHITELIST, 1, [Define this symbol to enable the key whitelisting module])
 fi
@@ -518,6 +528,7 @@ if test x"$enable_experimental" = x"yes"; then
   AC_MSG_NOTICE([Building NUMS generator module: $enable_module_generator])
   AC_MSG_NOTICE([Building Pedersen commitment module: $enable_module_commitment])
   AC_MSG_NOTICE([Building range proof module: $enable_module_rangeproof])
+  AC_MSG_NOTICE([Building bulletproof module: $enable_module_bulletproof])
   AC_MSG_NOTICE([Building key whitelisting module: $enable_module_whitelist])
   AC_MSG_NOTICE([Building surjection proof module: $enable_module_surjectionproof])
   AC_MSG_NOTICE([******])
@@ -526,11 +537,17 @@ if test x"$enable_experimental" = x"yes"; then
     if test x"$enable_module_commitment" = x"yes"; then
       AC_MSG_ERROR([Commitment module requires the generator module. Use --enable-module-generator to allow.])
     fi
+    if test x"$enable_module_bulletproof" = x"yes"; then
+      AC_MSG_ERROR([Bulletproof module requires the generator module. Use --enable-module-generator to allow.])
+    fi
   fi
 
   if test x"$enable_module_commitment" != x"yes"; then
     if test x"$enable_module_rangeproof" = x"yes"; then
       AC_MSG_ERROR([Rangeproof module requires the commitment module. Use --enable-module-commitment to allow.])
+    fi
+    if test x"$enable_module_bulletproof" = x"yes"; then
+      AC_MSG_ERROR([Bulletproof module requires the commitment module. Use --enable-module-commitment to allow.])
     fi
   fi
 
@@ -558,6 +575,9 @@ else
   if test x"$enable_module_rangeproof" = x"yes"; then
     AC_MSG_ERROR([Range proof module is experimental. Use --enable-experimental to allow.])
   fi
+  if test x"$enable_module_bulletproof" = x"yes"; then
+    AC_MSG_ERROR([Bulletproof module is experimental. Use --enable-experimental to allow.])
+  fi
   if test x"$enable_module_whitelist" = x"yes"; then
     AC_MSG_ERROR([Key whitelisting module is experimental. Use --enable-experimental to allow.])
   fi
@@ -583,6 +603,7 @@ AM_CONDITIONAL([ENABLE_MODULE_RECOVERY], [test x"$enable_module_recovery" = x"ye
 AM_CONDITIONAL([ENABLE_MODULE_GENERATOR], [test x"$enable_module_generator" = x"yes"])
 AM_CONDITIONAL([ENABLE_MODULE_COMMITMENT], [test x"$enable_module_commitment" = x"yes"])
 AM_CONDITIONAL([ENABLE_MODULE_RANGEPROOF], [test x"$enable_module_rangeproof" = x"yes"])
+AM_CONDITIONAL([ENABLE_MODULE_BULLETPROOF], [test x"$enable_module_bulletproof" = x"yes"])
 AM_CONDITIONAL([ENABLE_MODULE_WHITELIST], [test x"$enable_module_whitelist" = x"yes"])
 AM_CONDITIONAL([USE_JNI], [test x"$use_jni" == x"yes"])
 AM_CONDITIONAL([USE_EXTERNAL_ASM], [test x"$use_external_asm" = x"yes"])
