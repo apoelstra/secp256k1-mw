@@ -25,10 +25,10 @@ typedef struct {
 } secp256k1_generator;
 
 /** Standard secp256k1 generator G */
-extern const secp256k1_generator secp256k1_generator_const_g;
+SECP256K1_API extern const secp256k1_generator secp256k1_generator_const_g;
 
 /** Alternate secp256k1 generator from Elements Alpha */
-extern const secp256k1_generator secp256k1_generator_const_h;
+SECP256K1_API extern const secp256k1_generator secp256k1_generator_const_h;
 
 /** Parse a 33-byte generator byte sequence into a generator object.
  *
