@@ -37,10 +37,11 @@ SECP256K1_API int secp256k1_thresholdsig_keysplit(
 
 /** Verifies a keyshard against a set of public coefficients and updates the set of signing keys
  *
- *  This function serves two very different purposes. First, if `privshard` is non-NULL, it
- *  verifies that this shard is consistent with a set of public coefficients which were output
- *  from `secp256k1_thresholdsig_keysplit`. If `seckey` is non-NULL, it updates this value to
- *  become a sum of all other signers' private shards.
+ *  This function serves two very different purposes. First, if `privshard` is non-NULL, it verifies
+ *  that this shard is consistent with a set of public coefficients which were output from
+ *  `secp256k1_thresholdsig_keysplit`. If `seckey` is non-NULL, the first call to `verify_shard`
+ *  sets `seckey` to `privshard`. In subsequent calls, `privshard` is added to `seckey` such
+ *  that `seckey` becomes the sum of the signer's private shards.
  *
  *  Secondly, it computes the public version of every other signer's shard, and updates the
  *  array `signer_pubkeys` to become an array of all other signers' public keys.
@@ -60,7 +61,8 @@ SECP256K1_API int secp256k1_thresholdsig_keysplit(
  *             my_idx: index of the caller in the MuSig policy
  *          other_idx: index of the signer who provided the shards
  *           pubcoeff: array of public coefficients (cannot be NULL)
- *           n_coeffs: number of coefficients in the above array; or number of signers needed for quorum
+ *           n_coeffs: number of coefficients in the above array. Must be same as number `k` of
+ *                     signers required to participate in the signature.
  */
 SECP256K1_API int secp256k1_thresholdsig_verify_shard(
     const secp256k1_context *ctx,
@@ -96,9 +98,8 @@ SECP256K1_API int secp256k1_thresholdsig_verify_shard(
  *                     set with `musig_session_set_msg` before signing and verifying.
  *        combined_pk: the combined public key of all signers (cannot be NULL)
  *            indices: array of signers' indices in the MuSig key combination (cannot be NULL)
- *          n_signers: length of signers array. Number of signers participating in
- *                     the signature. This is not necessarily the same as the number
- *                     of contributors to the MuSig key. Must be greater than 0 and at most 2^32 - 1.
+ *          n_signers: length of signers array. Number `k` of signers participating in
+ *                     the signature. Must be greater than 0 and at most 2^32 - 1.
  *           my_index: index of this signer in the MuSig key combination
  *             seckey: the signer's 32-byte secret key (cannot be NULL)
  */
